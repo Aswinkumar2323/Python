@@ -1,0 +1,206 @@
+#Parking Management System
+
+import os
+import platform
+import mysql.connector
+mydb=mysql.connector.connect(host="localhost",user="root",password="123",database="pms")
+mycursor=mydb.cursor()
+
+#Insertion of parking details
+
+def Add_Record():
+ L=[]
+ pid1=int(input("Enter the parking number : "))
+ L.append(pid1)
+ cname1=input("Enter the customer Name: ")
+ L.append(cname1)
+ level1=int(input("Enter level of parking(from level 1 to 3): "))
+ i=level1
+ a=1
+ b=3
+ if (i>=a) and (i<=b):
+     L.append(i)
+ else:
+     print("Maximum parking level",b)
+     runAgain()
+ freespace1=input("Is there any freespace or not YES/NO: ")
+ L.append(freespace1)
+ vehicleno1=input("Enter the Vehicle Number : ")
+ L.append(vehicleno1)
+ vehmodel=input("Enter vehicle model name:")
+ L.append(vehmodel)
+ nod1=int(input("Enter total number of days for parking: "))
+ L.append(nod1)
+ payment1=nod1*100
+ print("payment amount:",payment1)
+ L.append(payment1)
+ stud=(L)
+ sql="insert into parkmaster11 (pid,cnm,level,freespace,vehicleno,vehmodel,nod,payment) values (%s,%s,%s,%s,%s,%s,%s,%s)"
+ mycursor.execute(sql,stud)
+ mydb.commit()
+ runAgain()
+ 
+#To view the parking details
+ 
+def RecView():
+ print("Select the search criteria : ")
+ print("1. Parking Number")
+ print("2. Customer Name")
+ print("3. Level No")
+ print("4. All")
+ ch=int(input("Enter the choice : "))
+ if ch==1:
+  s=[]   
+  pno=int(input("Enter Parking no : "))
+  s.append(pno)
+  rl=(s)
+  sql="select * from parkmaster11 where pid=%s"
+  mycursor.execute(sql,rl)
+  rows=mycursor.fetchone()
+  for x in rows:
+      print(x)
+  runAgain()
+ elif ch==2:
+  s=[]    
+  pname=input("Enter customer Name : ")
+  s.append(pname)
+  rl=(s)
+  sql="select * from parkmaster11 where cnm=%s"
+  mycursor.execute(sql,rl)
+  rows=mycursor.fetchone()
+  for x in rows:
+       print(x)
+     
+  runAgain()
+ elif ch==3:
+  s=[]
+  plevel=int(input("Enter Level of Parking : "))
+  s.append(plevel)
+  rl=(s)
+  sql="select * from parkmaster11 where level=%s"
+  mycursor.execute(sql,rl)
+  rows=mycursor.fetchone()
+  for x in rows:
+      print(x)
+  runAgain()
+ elif ch==4:
+  sql="select * from parkmaster11"
+  mycursor.execute(sql)
+  res=mycursor.fetchall()
+  print("Details about Parking are as follows : ")
+  print("(Parking Id,customer Name,Level,FreeSpace(Y/N),Vehicle No,vehmodel,No of days for parking,Payment)")
+  for x in res:
+      print("parkingid:",x[0])
+      print("customername:",x[1])
+      print("level:",x[2])
+      print("vehicleid:",x[3])
+      print("vehiclemodel:",x[4])
+      print("typeofvehicle:",x[5])
+      
+  runAgain()
+  
+#To add vehicle details
+  
+def Vehicle_Detail():
+ L=[]
+ vid1=input("Enter Vehicle No : ")
+ L.append(vid1)
+ vnm1=input("Enter Vehicle Name/Model Name : ")
+ L.append(vnm1)
+ Tov1=input("Enter Type of vehicle 2W/4W: ")
+ if (Tov1.lower()=="2w") or (Tov1.lower()=="4w"):
+     L.append(Tov1)
+ else:
+     print("Only 2w or 4w")
+     runAgain()
+ vtv=(L)
+ sql="insert into vehicle (vid,vnm,Tov) values (%s,%s,%s)"
+ mycursor.execute(sql,vtv)
+ mydb.commit()
+ print("Vehicle details is Registered!!")
+ runAgain()
+ 
+#To view vehicle details
+ 
+def Vehicle_View():
+ b=[]
+ vid=(input("Enter the vehicle number of the vehicle whose details is to be viewed : "))
+ b.append(vid)
+ sql="Select parkmaster11.pid, parkmaster11.cnm,parkmaster11.level,vehicle.vid,vehicle.vnm,vehicle.Tov from parkmaster11,vehicle where parkmaster11.vehicleno=vehicle.vid and parkmaster11.vehicleno=%s"
+ rl=(b) 
+ mycursor.execute(sql,rl)
+ res=mycursor.fetchall()
+ for x in res:
+  print("parkingid:",x[0])
+  print("customername:",x[1])
+  print("level:",x[2])
+  print("vehicleid:",x[3])
+  print("vehiclemodel:",x[4])
+  print("typeofvehicle:",x[5])
+ runAgain() 
+
+#To remove vehicle details
+ 
+def remove():
+ r=[]   
+ vid=(input("Enter the vehicle number of the vehicle to be deleted : " ))
+ r.append(vid)
+ r1=(r)
+ sql="Delete from vehicle where vid=%s"
+ mycursor.execute(sql,r1)
+ mydb.commit()
+ print("Vehicle Details Deleted")
+ runAgain()
+
+#To remove parking details
+ 
+def remove_parking():
+ z=[]   
+ pid=(input("Enter the parking number to be deleted : " ))
+ z.append(pid)
+ z1=(z)
+ sql="Delete from parkmaster11 where pid=%s"
+ mycursor.execute(sql,z1)
+ mydb.commit()
+ print("Parking Details Deleted")
+ runAgain()
+
+#To run the command again
+ 
+def runAgain():
+ runAgn = input("\nwant To Run Again Y/n: ")
+ while(runAgn.lower() == 'y'):
+   if(platform.system() == "Windows"):
+    print(os.system('cls'))
+    Menu()
+   else:
+    print(os.system('clear'))
+
+def Menu():
+ print("Enter 1 : To Add Parking Detail")
+ print("Enter 2 : To View Parking Detail ")
+ print("Enter 3 : To Add Vehicle Detail ")
+ print("Enter 4 : To Remove Vehicle Record")
+ print("Enter 5 : To see the details of Vehicle")
+ print("Enter 6 : To Remove the parking record")
+ input_dt=int(input("Please Select An Above Option: "))
+ if(input_dt==1):
+  Add_Record()
+ elif(input_dt==2):
+  RecView()
+ elif(input_dt==3):
+  Vehicle_Detail()
+ elif(input_dt==4):
+  remove()
+ elif(input_dt==5):
+  Vehicle_View()
+ elif(input_dt==6):
+  remove_parking() 
+ else:
+  print("Enter correct choice. . . ")
+  runAgain()
+Menu()  
+  
+
+
+
